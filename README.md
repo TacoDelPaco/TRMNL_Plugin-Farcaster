@@ -1,6 +1,6 @@
-# TRMNL Bluesky Plugins
+# TRMNL Farcaster Plugins
 
-Unofficial Bluesky plugins for TRMNL e-ink displays. Display your Bluesky timeline and trending topics on your TRMNL device.
+Unofficial Farcaster plugins for TRMNL e-ink displays. Display your Farcaster timeline and trending topics on your TRMNL device.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
@@ -8,29 +8,29 @@ Unofficial Bluesky plugins for TRMNL e-ink displays. Display your Bluesky timeli
 
 ## Overview
 
-This repository contains Node.js scripts and Liquid templates for integrating Bluesky social media data with TRMNL displays. The plugins fetch data from Bluesky's API and display it on your TRMNL device using webhook-based custom plugins.
+This repository contains Node.js scripts and Liquid templates for integrating Farcaster social media data with TRMNL displays. The plugins fetch data from Farcaster's API via Neynar and display it on your TRMNL device using webhook-based custom plugins.
 
 ### Available Plugins
 
-- **Timeline Plugin**: Displays your Bluesky timeline with post content and engagement metrics
-- **Trends Plugin**: Shows trending topics on Bluesky with post counts and trending status
-- **Profile Plugin**: Shows a Bluesky user's profile information including stats and bio
+- **Timeline Plugin**: Displays your Farcaster timeline with post content and engagement metrics
+- **Trends Plugin**: Shows trending topics on Farcaster with post counts
 
 ## Requirements
 
 - Node.js 22.x
 - A TRMNL device
-- A Bluesky account with an app password
+- A Farcaster account and a Neynar API key
 - A hosting solution for running the sync scripts periodically (e.g., Heroku, cron server, or local machine)
 
 ## Setup
 
-### 1. Bluesky Configuration
+### 1. Farcaster & Neynar Configuration
 
-1. Generate an app password from your Bluesky account:
-   - Go to [https://bsky.app/settings/app-passwords](https://bsky.app/settings/app-passwords)
-   - Create a new app password
-   - Save this password securely
+1.  **Get a Neynar API Key**:
+    *   Sign up for a free account at [neynar.com](https://neynar.com/).
+    *   Subscribe to a plan to get your API key from the [Neynar Developer Portal](https://dev.neynar.com/).
+2.  **Get your Farcaster FID (Farcaster ID)**:
+    *   You can use a tool like [Warpcast's API](https://warpcast.com/~/developers/v2) or other Farcaster user lookup tools to find your numerical FID.
 
 ### 2. TRMNL Plugin Configuration
 
@@ -72,10 +72,10 @@ Set up cron jobs to run the scripts periodically:
 
 ```bash
 # Run timeline sync every 30 minutes
-*/30 * * * * cd /path/to/trmnl-bsky && node sync-timeline.js
+*/30 * * * * cd /path/to/trmnl-farcaster && node sync-timeline.js
 
 # Run trends sync every hour
-0 * * * * cd /path/to/trmnl-bsky && node sync-trends.js
+0 * * * * cd /path/to/trmnl-farcaster && node sync-trends.js
 ```
 
 ### Running on Heroku with Heroku Scheduler
@@ -83,8 +83,8 @@ Set up cron jobs to run the scripts periodically:
 1. Create a new Heroku app and deploy this repository
 2. Set the environment variables in Heroku:
    ```bash
-   heroku config:set BSKY_IDENTIFIER=your.handle@bsky.social
-   heroku config:set BSKY_APP_PASSWORD=your-app-password
+   heroku config:set NEYNAR_API_KEY=your-neynar-api-key
+   heroku config:set FARCASTER_FID=your-farcaster-fid
    heroku config:set TRMNL_CUSTOM_PLUGIN_TIMELINE_WEBHOOK_URL=your-webhook-url
    heroku config:set TRMNL_CUSTOM_PLUGIN_TRENDS_WEBHOOK_URL=your-webhook-url
    ```
@@ -96,26 +96,13 @@ Set up cron jobs to run the scripts periodically:
    - Add job: `node sync-timeline.js` (run every 30 minutes)
    - Add job: `node sync-trends.js` (run every hour)
 
-## Templates
-
-### Setting up the Profile Plugin
-
-1. Create a new private plugin in TRMNL:
-   - Navigate to Plugins > Private Plugin
-   - Select "Polling URL" as the strategy
-   - Copy the contents of `templates/profile.liquid` into the markup field
-   - Set the polling URL to: `https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=<insert bluesky handle here>`
-     - Replace `<insert bluesky handle here>` with the Bluesky handle you want to display
-     - Example: `https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=bob.bsky.social`
-   - Save the plugin
-
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Disclaimer
 
-This is an unofficial plugin and is not affiliated with, endorsed by, or associated with Bluesky or TRMNL. All trademarks belong to their respective owners.
+This is an unofficial plugin and is not affiliated with, endorsed by, or associated with Farcaster, Neynar, or TRMNL. All trademarks belong to their respective owners.
 
 ## Contributing
 
@@ -125,4 +112,5 @@ Contributions are welcome! Please feel free to submit issues or pull requests.
 
 - [TRMNL Documentation](https://help.usetrmnl.com/)
 - [TRMNL Private Plugins Guide](https://help.usetrmnl.com/en/articles/9510536-private-plugins)
-- [Bluesky API Documentation](https://docs.bsky.app/)
+- [Neynar API Documentation](https://docs.neynar.com/)
+- [Farcaster Protocol Documentation](https://docs.farcaster.xyz/)
