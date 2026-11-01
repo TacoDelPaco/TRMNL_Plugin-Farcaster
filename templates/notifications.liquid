@@ -3,7 +3,7 @@
     position: relative !important;
     width: 100% !important;
     height: 100% !important;
-    padding: 14px 18px 46px 18px !important;
+    padding: 16px 20px 48px 20px !important;
     box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
@@ -14,7 +14,7 @@
     display: flex;
     flex-direction: row;
     height: 100%;
-    gap: 18px;
+    gap: 22px;
     overflow: hidden;
   }
 
@@ -27,20 +27,27 @@
   }
 
   .notification-item {
-    border-bottom: 1px solid #777;
-    padding: 4px 0 5px 0;
+    border-bottom: 1px solid #aaa;
+    padding: 8px 0 10px 0;
   }
 
   .notification-item:last-child {
     border-bottom: none;
   }
 
+  .item-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+  }
+
   .badge {
     display: inline-block;
-    padding: 1px 6px;
+    padding: 2px 7px;
     font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     border: 1px solid #000;
     line-height: 1.2;
   }
@@ -51,28 +58,29 @@
   }
 
   .actor-handle {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 270px;
+    letter-spacing: -0.2px;
   }
 
   .time-meta {
     font-size: 11px;
-    color: #555;
+    color: #666;
     margin-left: auto;
   }
 
   .cast-content {
-    font-size: 12px;
-    line-height: 1.3;
-    margin-top: 2px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #111;
     word-break: break-word;
     overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 1;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
   }
 
@@ -80,7 +88,7 @@
     width: 200px;
     flex-shrink: 0;
     border-left: 2px solid #000;
-    padding-left: 16px;
+    padding-left: 18px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -91,8 +99,8 @@
     justify-content: space-between;
     align-items: center;
     border-bottom: 2px solid #000;
-    padding-bottom: 6px;
-    margin-bottom: 8px;
+    padding-bottom: 7px;
+    margin-bottom: 10px;
   }
 
   .sidebar-title {
@@ -106,20 +114,20 @@
     font-weight: 700;
     background: #000;
     color: #fff;
-    padding: 1px 6px;
+    padding: 2px 7px;
   }
 
   .stats-list {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
   }
 
   .stat-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 8px;
+    padding: 6px 10px;
     border: 1px solid #000;
     background: #fff;
   }
@@ -130,7 +138,7 @@
   }
 
   .stat-value {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 800;
     font-family: monospace, monospace;
   }
@@ -151,13 +159,13 @@
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
-    height: 36px !important;
+    height: 38px !important;
     display: flex !important;
     flex-direction: row !important;
     justify-content: flex-end !important;
     align-items: center !important;
     gap: 8px !important;
-    padding: 0 18px !important;
+    padding: 0 20px !important;
     border-top: 2px solid #000 !important;
     background: #fff !important;
     box-sizing: border-box !important;
@@ -208,7 +216,7 @@
   <div class="content" style="height: 100%;">
     {% if notifications and notifications.size > 0 %}
       <div class="main-columns">
-        <!-- Left: Notifications Feed (Up to 10) -->
+        <!-- Left: Notifications Feed (Spaced & Legible) -->
         <div class="feed-col">
           {% for item in notifications limit:10 %}
             {% assign n_type = item.type | downcase %}
@@ -232,7 +240,7 @@
             {% endif %}
 
             <div class="notification-item">
-              <div class="flex items--center gap--small">
+              <div class="item-header">
                 <!-- Action Badge -->
                 <span class="badge {% if n_type == 'mention' or n_type == 'reply' or n_type == 'replies' or n_type == 'mentions' %}badge--invert{% endif %}">
                   {% case n_type %}
@@ -250,7 +258,7 @@
                   {% if handle != blank %}
                     @{{ handle | escape }}
                     {% if extra_count > 0 %}
-                      <span style="font-weight: normal; color: #555;">+{{ extra_count }}</span>
+                      <span style="font-weight: normal; color: #666;">+{{ extra_count }}</span>
                     {% endif %}
                   {% elsif name != blank %}
                     {{ name | escape }}
@@ -273,7 +281,7 @@
                   {{ cast_text | escape }}
                 </div>
               {% elsif n_type == "follows" or n_type == "follow" %}
-                <div class="cast-content" style="color: #555; font-style: italic;">
+                <div class="cast-content" style="color: #666; font-style: italic;">
                   Started following you
                 </div>
               {% endif %}
@@ -320,7 +328,7 @@
     {% endif %}
   </div>
 
-  <!-- Bottom Title Bar: Full Width, Spanning Across Screen, Right-Aligned -->
+  <!-- Bottom Title Bar: Full Width, Right-Aligned -->
   <div class="title_bar">
     <svg class="image" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
       <path d="M18.24.24H5.76A5.76 5.76 0 0 0 0 6v12a5.76 5.76 0 0 0 5.76 5.76h12.48A5.76 5.76 0 0 0 24 18V6A5.76 5.76 0 0 0 18.24.24m.816 17.166v.504a.49.49 0 0 1-.486.49h-1.474a.49.49 0 0 1-.49-.49v-4.344a3.67 3.67 0 0 0-1.12-2.656 3.65 3.65 0 0 0-2.61-.956h-.752a3.65 3.65 0 0 0-2.61.956 3.67 3.67 0 0 0-1.12 2.656v4.344a.49.49 0 0 1-.49.49H6.03a.49.49 0 0 1-.49-.49v-.504a4.12 4.12 0 0 1 1.056-2.79 4.14 4.14 0 0 1 2.92-1.282h.334a1.86 1.86 0 0 0 1.29-.53 1.87 1.87 0 0 0 .53-1.32V8.498a.49.49 0 0 1 .49-.49h1.74a.49.49 0 0 1 .49.49v2.79a1.87 1.87 0 0 0 .53 1.32 1.86 1.86 0 0 0 1.29.53h.334a4.14 4.14 0 0 1 2.92 1.282 4.12 4.12 0 0 1 1.056 2.79"/>
