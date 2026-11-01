@@ -4,7 +4,8 @@
  * Sits between TRMNL and Neynar:
  * 1. Hides your Neynar API key (stored securely in Cloudflare environment secrets)
  * 2. Formats timestamps into compact relative times ("5m", "2h") for 1-bit e-ink screens
- * 3. Caches responses to prevent exceeding Neynar API rate limits
+ * 3. Correctly resolves the actor for likes, recasts, follows, replies, and mentions
+ * 4. Caches responses to prevent exceeding Neynar API rate limits
  */
 
 function formatTimeAgo(timestamp) {
@@ -61,17 +62,21 @@ export default {
         let actorHandle = '';
         let actorName = '';
         let text = '';
+        const type = item.type;
 
-        if (item.cast) {
-          actorHandle = item.cast.author?.username || '';
-          actorName = item.cast.author?.display_name || item.cast.author?.displayName || '';
-          text = item.cast.text || '';
-        } else if (item.user) {
-          actorHandle = item.user.username || '';
-          actorName = item.user.display_name || item.user.displayName || '';
-        } else if (item.reactions && item.reactions[0]) {
-          actorHandle = item.reactions[0].user?.username || '';
-          actorName = item.reactions[0].user?.display_name || '';
+        if (type === 'likes' || type === 'recasts') {
+          const reactor = item.reactions?.[0]?.user || item.users?.[0];
+          actorHandle = reactor?.username || item.reactions?.[0]?.fname || '';
+          actorName = reactor?.display_name || reactor?.displayName || '';
+          text = item.cast?.text || '';
+        } else if (type === 'follows') {
+          const follower = item.user || item.follows?.[0]?.user || item.users?.[0];
+          actorHandle = follower?.username || '';
+          actorName = follower?.display_name || follower?.displayName || '';
+        } else {
+          actorHandle = item.cast?.author?.username || '';
+          actorName = item.cast?.author?.display_name || item.cast?.author?.displayName || '';
+          text = item.cast?.text || '';
         }
 
         return {
@@ -81,6 +86,7 @@ export default {
           text,
           timeAgo: formatTimeAgo(item.most_recent_timestamp),
           timestamp: item.most_recent_timestamp,
+          reactions: item.reactions,
         };
       });
 

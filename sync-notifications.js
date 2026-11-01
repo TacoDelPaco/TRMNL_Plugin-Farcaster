@@ -21,17 +21,22 @@ async function getFarcasterNotifications() {
             let actorHandle = '';
             let actorName = '';
             let text = '';
+            const type = item.type;
 
-            if (item.cast) {
-                actorHandle = item.cast.author?.username || '';
-                actorName = item.cast.author?.displayName || '';
-                text = item.cast.text || '';
-            } else if (item.user) {
-                actorHandle = item.user.username || '';
-                actorName = item.user.displayName || '';
-            } else if (item.reactions && item.reactions[0]) {
-                actorHandle = item.reactions[0].user?.username || '';
-                actorName = item.reactions[0].user?.displayName || '';
+            if (type === 'likes' || type === 'recasts') {
+                const reactor = item.reactions?.[0]?.user || item.users?.[0];
+                actorHandle = reactor?.username || item.reactions?.[0]?.fname || '';
+                actorName = reactor?.display_name || reactor?.displayName || '';
+                text = item.cast?.text || '';
+            } else if (type === 'follows') {
+                const follower = item.user || item.follows?.[0]?.user || item.users?.[0];
+                actorHandle = follower?.username || '';
+                actorName = follower?.display_name || follower?.displayName || '';
+            } else {
+                // Replies, mentions, quotes: cast author is the actor
+                actorHandle = item.cast?.author?.username || '';
+                actorName = item.cast?.author?.displayName || '';
+                text = item.cast?.text || '';
             }
 
             return {

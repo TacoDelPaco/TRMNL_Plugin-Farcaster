@@ -68,11 +68,25 @@
     {% if notifications and notifications.size > 0 %}
       <div class="notification-list">
         {% for item in notifications limit:4 %}
-          {% assign handle = item.actorHandle | default: item.cast.author.username | default: item.user.username | default: item.reactions[0].user.username %}
-          {% assign name = item.actorName | default: item.cast.author.displayName | default: item.user.displayName %}
-          {% assign cast_text = item.text | default: item.cast.text %}
           {% assign n_type = item.type | downcase %}
           {% assign n_time = item.timestamp | default: item.most_recent_timestamp %}
+          {% assign cast_text = item.text | default: item.cast.text %}
+
+          <!-- Identify the actor based on notification type -->
+          {% if n_type == "likes" or n_type == "like" or n_type == "recasts" or n_type == "recast" %}
+            {% assign handle = item.reactions[0].user.username | default: item.reactions[0].fname | default: item.users[0].username | default: item.actorHandle %}
+            {% assign name = item.reactions[0].user.display_name | default: item.reactions[0].user.displayName | default: item.actorName %}
+            {% assign extra_count = item.reactions.size | minus: 1 %}
+          {% elsif n_type == "follows" or n_type == "follow" %}
+            {% assign handle = item.user.username | default: item.follows[0].user.username | default: item.users[0].username | default: item.actorHandle %}
+            {% assign name = item.user.display_name | default: item.user.displayName | default: item.actorName %}
+            {% assign extra_count = 0 %}
+          {% else %}
+            <!-- Replies and Mentions: cast author is the person who interacted -->
+            {% assign handle = item.actorHandle | default: item.cast.author.username %}
+            {% assign name = item.actorName | default: item.cast.author.display_name | default: item.cast.author.displayName %}
+            {% assign extra_count = 0 %}
+          {% endif %}
 
           <div class="notification-item">
             <div class="flex items--center gap--small">
@@ -88,9 +102,18 @@
                 {% endcase %}
               </span>
 
-              <!-- User Identifier -->
+              <!-- User Identifier (who performed the action) -->
               <span class="actor-handle">
-                {% if handle != blank %}@{{ handle | escape }}{% else %}{{ name | escape }}{% endif %}
+                {% if handle != blank %}
+                  @{{ handle | escape }}
+                  {% if extra_count > 0 %}
+                    <span style="font-weight: normal; color: #555;">+{{ extra_count }}</span>
+                  {% endif %}
+                {% elsif name != blank %}
+                  {{ name | escape }}
+                {% else %}
+                  Someone
+                {% endif %}
               </span>
 
               <!-- Timestamp -->
