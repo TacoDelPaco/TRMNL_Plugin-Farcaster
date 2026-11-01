@@ -1,2 +1,9 @@
-.env
+# Node.js
 node_modules/
+.env
+
+# Local logs
+*.log
+
+# Workflows (optional local templates)
+.github/

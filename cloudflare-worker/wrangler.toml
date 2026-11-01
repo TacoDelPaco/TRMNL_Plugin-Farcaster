@@ -1,0 +1,8 @@
+name = "trmnl-farcaster-proxy"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+[vars]
+DEFAULT_FARCASTER_FID = ""
+
+# Set your secret via: npx wrangler secret put NEYNAR_API_KEY

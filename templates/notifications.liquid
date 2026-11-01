@@ -1,0 +1,133 @@
+<style>
+  .notification-list {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: flex-start;
+  }
+
+  .notification-item {
+    border-bottom: 1px solid #777;
+    padding-top: 6px;
+    padding-bottom: 8px;
+  }
+
+  .notification-item:last-child {
+    border-bottom: none;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 1px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border: 1px solid #000;
+    line-height: 1.2;
+  }
+
+  .badge--invert {
+    background: #000;
+    color: #fff;
+  }
+
+  .actor-handle {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .time-meta {
+    font-size: 11px;
+    color: #555;
+    margin-left: auto;
+  }
+
+  .cast-content {
+    font-size: 13px;
+    line-height: 1.35;
+    margin-top: 4px;
+    word-break: break-word;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+  }
+</style>
+
+<div class="layout">
+  <div class="content">
+    {% if notifications and notifications.size > 0 %}
+      <div class="notification-list">
+        {% for item in notifications limit:4 %}
+          {% assign handle = item.actorHandle | default: item.cast.author.username | default: item.user.username | default: item.reactions[0].user.username %}
+          {% assign name = item.actorName | default: item.cast.author.displayName | default: item.user.displayName %}
+          {% assign cast_text = item.text | default: item.cast.text %}
+          {% assign n_type = item.type | downcase %}
+          {% assign n_time = item.timestamp | default: item.most_recent_timestamp %}
+
+          <div class="notification-item">
+            <div class="flex items--center gap--small">
+              <!-- Action Badge -->
+              <span class="badge {% if n_type == 'mention' or n_type == 'reply' or n_type == 'replies' or n_type == 'mentions' %}badge--invert{% endif %}">
+                {% case n_type %}
+                  {% when "likes" or "like" %}LIKE
+                  {% when "recasts" or "recast" %}RECAST
+                  {% when "replies" or "reply" %}REPLY
+                  {% when "mentions" or "mention" %}MENTION
+                  {% when "follows" or "follow" %}FOLLOW
+                  {% else %}{{ n_type | upcase }}
+                {% endcase %}
+              </span>
+
+              <!-- User Identifier -->
+              <span class="actor-handle">
+                {% if handle != blank %}@{{ handle | escape }}{% else %}{{ name | escape }}{% endif %}
+              </span>
+
+              <!-- Timestamp -->
+              {% if n_time != blank %}
+                <span class="time-meta">
+                  {{ n_time | date: "%b %d, %H:%M" }}
+                </span>
+              {% endif %}
+            </div>
+
+            <!-- Cast snippet or description -->
+            {% if cast_text != blank %}
+              <div class="cast-content">
+                {{ cast_text | escape }}
+              </div>
+            {% elsif n_type == "follows" or n_type == "follow" %}
+              <div class="cast-content" style="color: #555; font-style: italic;">
+                Started following you
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <span class="title title--small">No notifications to display</span>
+        <span class="meta mt--1">Check your Farcaster FID and Neynar API key</span>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Bottom Title Bar with Farcaster Glyph -->
+  <div class="title_bar">
+    <svg class="image" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: middle;">
+      <path d="M18.24.24H5.76A5.76 5.76 0 0 0 0 6v12a5.76 5.76 0 0 0 5.76 5.76h12.48A5.76 5.76 0 0 0 24 18V6A5.76 5.76 0 0 0 18.24.24m.816 17.166v.504a.49.49 0 0 1-.486.49h-1.474a.49.49 0 0 1-.49-.49v-4.344a3.67 3.67 0 0 0-1.12-2.656 3.65 3.65 0 0 0-2.61-.956h-.752a3.65 3.65 0 0 0-2.61.956 3.67 3.67 0 0 0-1.12 2.656v4.344a.49.49 0 0 1-.49.49H6.03a.49.49 0 0 1-.49-.49v-.504a4.12 4.12 0 0 1 1.056-2.79 4.14 4.14 0 0 1 2.92-1.282h.334a1.86 1.86 0 0 0 1.29-.53 1.87 1.87 0 0 0 .53-1.32V8.498a.49.49 0 0 1 .49-.49h1.74a.49.49 0 0 1 .49.49v2.79a1.87 1.87 0 0 0 .53 1.32 1.86 1.86 0 0 0 1.29.53h.334a4.14 4.14 0 0 1 2.92 1.282 4.12 4.12 0 0 1 1.056 2.79"/>
+    </svg>
+    <span class="title">Farcaster Notifications</span>
+    <span class="instance">{{ trmnl.plugin_settings.instance_name }}</span>
+  </div>
+</div>

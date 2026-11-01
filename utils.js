@@ -30,6 +30,8 @@ async function sendData(data, type = 'timeline', webhookUrl) {
         merge_variables.timeline = (data.timeline || []).slice(0, 5);
     } else if (type === 'trends') {
         merge_variables.trends = data.trends || [];
+    } else if (type === 'notifications') {
+        merge_variables.notifications = (data.notifications || []).slice(0, 5);
     }
 
     const postData = JSON.stringify({

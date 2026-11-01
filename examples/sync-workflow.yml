@@ -1,0 +1,46 @@
+name: Sync Farcaster to TRMNL
+
+on:
+  schedule:
+    # Run every 30 minutes
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync Notifications
+        if: env.TRMNL_CUSTOM_PLUGIN_NOTIFICATIONS_WEBHOOK_URL != ''
+        run: node sync-notifications.js
+        env:
+          NEYNAR_API_KEY: ${{ secrets.NEYNAR_API_KEY }}
+          FARCASTER_FID: ${{ secrets.FARCASTER_FID }}
+          TRMNL_CUSTOM_PLUGIN_NOTIFICATIONS_WEBHOOK_URL: ${{ secrets.TRMNL_CUSTOM_PLUGIN_NOTIFICATIONS_WEBHOOK_URL }}
+
+      - name: Sync Timeline
+        if: env.TRMNL_CUSTOM_PLUGIN_TIMELINE_WEBHOOK_URL != ''
+        run: node sync-timeline.js
+        env:
+          NEYNAR_API_KEY: ${{ secrets.NEYNAR_API_KEY }}
+          FARCASTER_FID: ${{ secrets.FARCASTER_FID }}
+          TRMNL_CUSTOM_PLUGIN_TIMELINE_WEBHOOK_URL: ${{ secrets.TRMNL_CUSTOM_PLUGIN_TIMELINE_WEBHOOK_URL }}
+
+      - name: Sync Trends
+        if: env.TRMNL_CUSTOM_PLUGIN_TRENDS_WEBHOOK_URL != ''
+        run: node sync-trends.js
+        env:
+          NEYNAR_API_KEY: ${{ secrets.NEYNAR_API_KEY }}
+          TRMNL_CUSTOM_PLUGIN_TRENDS_WEBHOOK_URL: ${{ secrets.TRMNL_CUSTOM_PLUGIN_TRENDS_WEBHOOK_URL }}
