@@ -41,7 +41,7 @@ export default {
     }
 
     try {
-      const neynarRes = await fetch(`https://api.neynar.com/v2/farcaster/notifications?fid=${fid}&limit=5`, {
+      const neynarRes = await fetch(`https://api.neynar.com/v2/farcaster/notifications?fid=${fid}&limit=10`, {
         headers: {
           'accept': 'application/json',
           'x-api-key': apiKey,

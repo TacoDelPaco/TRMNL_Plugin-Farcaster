@@ -35,7 +35,7 @@ TRMNL custom plugins support **Polling** with custom headers and Liquid template
 3. Choose **Polling** as the strategy.
 4. Set the **Polling URL**:
    ```text
-   https://api.neynar.com/v2/farcaster/notifications?fid=YOUR_FARCASTER_FID&limit=5
+   https://api.neynar.com/v2/farcaster/notifications?fid=YOUR_FARCASTER_FID&limit=10
    ```
 5. Set the **Polling Headers**:
    ```json
