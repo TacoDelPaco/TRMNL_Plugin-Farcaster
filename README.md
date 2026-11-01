@@ -29,24 +29,38 @@ TRMNL custom plugins support **Polling** with custom headers and Liquid template
 * A [Neynar API Key](https://neynar.com/) (free tier available)
 * A TRMNL account and device
 
-### 2. TRMNL Setup
+### 2. TRMNL Setup (No Code / Polling)
 1. Log into your [TRMNL Dashboard](https://usetrmnl.com/).
 2. Go to **Plugins** > **Private Plugin** and click **Add New**.
 3. Choose **Polling** as the strategy.
-4. Set the **Polling URL**:
+4. **(Optional) Add Custom Form Fields:**
+   Under the **Custom Fields** (or Form Fields) section, add:
+   * **Field 1:** Name: `Farcaster FID` | Keyname: `farcaster_fid` | Type: `Number`
+   * **Field 2:** Name: `Neynar API Key` | Keyname: `neynar_api_key` | Type: `Password`
+5. Set the **Polling URL**:
    ```text
-   https://api.neynar.com/v2/farcaster/notifications?fid=YOUR_FARCASTER_FID&limit=10
+   https://api.neynar.com/v2/farcaster/notifications?fid={{ farcaster_fid }}&limit=10
    ```
-5. Set the **Polling Headers**:
+   *(Or replace `{{ farcaster_fid }}` with your actual numerical FID if not using custom fields)*
+6. Set the **Polling Headers**:
    ```json
    {
      "accept": "application/json",
-     "x-api-key": "YOUR_NEYNAR_API_KEY"
+     "x-api-key": "{{ neynar_api_key }}"
    }
    ```
-6. Set your desired **Refresh Interval** (e.g., every 15, 30, or 60 minutes).
-7. Copy the contents of [`templates/notifications.liquid`](templates/notifications.liquid) and paste it into the **Markup** section.
-8. Save and add the plugin to your screen playlist!
+   *(Or replace `{{ neynar_api_key }}` with your actual Neynar API key)*
+7. Set your desired **Refresh Interval** (e.g., every 15, 30, or 60 minutes).
+8. Copy the contents of [`templates/notifications.liquid`](templates/notifications.liquid) and paste it into the **Markup** section.
+9. Save and add the plugin to your screen playlist!
+
+---
+
+## Publishing as a Community Recipe
+
+This integration includes [`settings.yml`](settings.yml) configured for TRMNL's recipe format. You can export or publish this plugin as a TRMNL Recipe:
+* Other TRMNL users will see an automated form asking for their **Farcaster FID** and **Neynar API Key**.
+* The polling URL, headers, and markup will be configured automatically for them!
 
 ---
 
