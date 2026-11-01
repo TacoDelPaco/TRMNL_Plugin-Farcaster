@@ -1,0 +1,27 @@
+---
+strategy: polling
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+framework_version: latest
+serverless_language: ''
+refresh_interval_floor: ''
+polling_url: https://api.neynar.com/v2/farcaster/notifications?fid={{ farcaster_fid }}&limit=10
+polling_headers: "{\r\n  \"accept\": \"application/json\",\r\n  \"x-api-key\": \"{{ neynar_api_key }}\"\r\n}"
+polling_body: ''
+id: 527304
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
+custom_fields:
+- keyname: farcaster_fid
+  name: Farcaster FID
+  field_type: number
+  description: Your numerical Farcaster ID (FID).
+- keyname: neynar_api_key
+  name: Neynar API Key
+  field_type: password
+  description: Your Neynar API key from dev.neynar.com.
+name: 'Farcaster Notifs '
+description: "Notifs through Neynar \U0001F49C"
+refresh_interval: 15

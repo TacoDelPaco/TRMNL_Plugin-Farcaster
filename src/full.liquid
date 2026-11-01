@@ -1,0 +1,332 @@
+<style>
+  .layout {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 16px 20px 48px 20px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  .main-columns {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    gap: 22px;
+    overflow: hidden;
+  }
+
+  .feed-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow: hidden;
+  }
+
+  .notification-item {
+    border-bottom: 1px solid #aaa;
+    padding: 8px 0 10px 0;
+  }
+
+  .notification-item:last-child {
+    border-bottom: none;
+  }
+
+  .item-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 7px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    border: 1px solid #000;
+    line-height: 1.2;
+  }
+
+  .badge--invert {
+    background: #000;
+    color: #fff;
+  }
+
+  .actor-handle {
+    font-size: 14px;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 270px;
+    letter-spacing: -0.2px;
+  }
+
+  .time-meta {
+    font-size: 11px;
+    color: #666;
+    margin-left: auto;
+  }
+
+  .cast-content {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #111;
+    word-break: break-word;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .sidebar-col {
+    width: 200px;
+    flex-shrink: 0;
+    border-left: 2px solid #000;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #000;
+    padding-bottom: 7px;
+    margin-bottom: 10px;
+  }
+
+  .sidebar-title {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+  }
+
+  .sidebar-total {
+    font-size: 11px;
+    font-weight: 700;
+    background: #000;
+    color: #fff;
+    padding: 2px 7px;
+  }
+
+  .stats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    border: 1px solid #000;
+    background: #fff;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .stat-value {
+    font-size: 16px;
+    font-weight: 800;
+    font-family: monospace, monospace;
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+  }
+
+  /* Full-width, bottom-pinned, right-aligned title bar */
+  .title_bar {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 38px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 0 20px !important;
+    border-top: 2px solid #000 !important;
+    background: #fff !important;
+    box-sizing: border-box !important;
+    z-index: 100 !important;
+  }
+
+  .title_bar .image {
+    width: 16px;
+    height: 16px;
+  }
+
+  .title_bar .title {
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .title_bar .instance {
+    font-size: 11px;
+    color: #555;
+  }
+</style>
+
+<!-- Calculate Notification Type Totals -->
+{% assign count_likes = 0 %}
+{% assign count_recasts = 0 %}
+{% assign count_replies = 0 %}
+{% assign count_mentions = 0 %}
+{% assign count_follows = 0 %}
+{% assign count_total = 0 %}
+
+{% for item in notifications %}
+  {% assign count_total = count_total | plus: 1 %}
+  {% assign n_type = item.type | downcase %}
+  {% if n_type == "likes" or n_type == "like" %}
+    {% assign count_likes = count_likes | plus: 1 %}
+  {% elsif n_type == "recasts" or n_type == "recast" %}
+    {% assign count_recasts = count_recasts | plus: 1 %}
+  {% elsif n_type == "replies" or n_type == "reply" %}
+    {% assign count_replies = count_replies | plus: 1 %}
+  {% elsif n_type == "mentions" or n_type == "mention" %}
+    {% assign count_mentions = count_mentions | plus: 1 %}
+  {% elsif n_type == "follows" or n_type == "follow" %}
+    {% assign count_follows = count_follows | plus: 1 %}
+  {% endif %}
+{% endfor %}
+
+<div class="layout">
+  <div class="content" style="height: 100%;">
+    {% if notifications and notifications.size > 0 %}
+      <div class="main-columns">
+        <!-- Left: Notifications Feed (Spaced & Legible) -->
+        <div class="feed-col">
+          {% for item in notifications limit:10 %}
+            {% assign n_type = item.type | downcase %}
+            {% assign n_time = item.timestamp | default: item.most_recent_timestamp %}
+            {% assign cast_text = item.text | default: item.cast.text %}
+
+            <!-- Identify who performed the action -->
+            {% if n_type == "likes" or n_type == "like" or n_type == "recasts" or n_type == "recast" %}
+              {% assign handle = item.reactions[0].user.username | default: item.reactions[0].fname | default: item.users[0].username | default: item.actorHandle %}
+              {% assign name = item.reactions[0].user.display_name | default: item.reactions[0].user.displayName | default: item.actorName %}
+              {% assign extra_count = item.reactions.size | minus: 1 %}
+            {% elsif n_type == "follows" or n_type == "follow" %}
+              {% assign handle = item.user.username | default: item.follows[0].user.username | default: item.users[0].username | default: item.actorHandle %}
+              {% assign name = item.user.display_name | default: item.user.displayName | default: item.actorName %}
+              {% assign extra_count = 0 %}
+            {% else %}
+              <!-- Replies, Mentions, Quotes: cast.author is the person who commented -->
+              {% assign handle = item.actorHandle | default: item.cast.author.username %}
+              {% assign name = item.actorName | default: item.cast.author.display_name | default: item.cast.author.displayName %}
+              {% assign extra_count = 0 %}
+            {% endif %}
+
+            <div class="notification-item">
+              <div class="item-header">
+                <!-- Action Badge -->
+                <span class="badge {% if n_type == 'mention' or n_type == 'reply' or n_type == 'replies' or n_type == 'mentions' %}badge--invert{% endif %}">
+                  {% if n_type == "likes" or n_type == "like" %}LIKE{% elsif n_type == "recasts" or n_type == "recast" %}RECAST{% elsif n_type == "replies" or n_type == "reply" %}REPLY{% elsif n_type == "mentions" or n_type == "mention" %}MENTION{% elsif n_type == "follows" or n_type == "follow" %}FOLLOW{% else %}{{ n_type | upcase }}{% endif %}
+                </span>
+
+                <!-- Actor Handle -->
+                <span class="actor-handle">
+                  {% if handle != blank %}
+                    @{{ handle | escape }}
+                    {% if extra_count > 0 %}
+                      <span style="font-weight: normal; color: #666;">+{{ extra_count }}</span>
+                    {% endif %}
+                  {% elsif name != blank %}
+                    {{ name | escape }}
+                  {% else %}
+                    Someone
+                  {% endif %}
+                </span>
+
+                <!-- Timestamp -->
+                {% if n_time != blank %}
+                  <span class="time-meta">
+                    {{ n_time | date: "%b %d, %H:%M" }}
+                  </span>
+                {% endif %}
+              </div>
+
+              <!-- Cast text snippet -->
+              {% if cast_text != blank %}
+                <div class="cast-content">
+                  {{ cast_text | escape }}
+                </div>
+              {% elsif n_type == "follows" or n_type == "follow" %}
+                <div class="cast-content" style="color: #666; font-style: italic;">
+                  Started following you
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Right: Notification Counts Breakdown -->
+        <div class="sidebar-col">
+          <div class="sidebar-header">
+            <span class="sidebar-title">ACTIVITY</span>
+            <span class="sidebar-total">{{ count_total }} TOTAL</span>
+          </div>
+
+          <div class="stats-list">
+            <div class="stat-row">
+              <span class="stat-label">LIKES</span>
+              <span class="stat-value">{{ count_likes }}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">RECASTS</span>
+              <span class="stat-value">{{ count_recasts }}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">REPLIES</span>
+              <span class="stat-value">{{ count_replies }}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">MENTIONS</span>
+              <span class="stat-value">{{ count_mentions }}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">FOLLOWS</span>
+              <span class="stat-value">{{ count_follows }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <span class="title title--small">No notifications to display</span>
+        <span class="meta mt--1">Check your Farcaster FID and Neynar API key</span>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Bottom Title Bar: Full Width, Right-Aligned -->
+  <div class="title_bar">
+    <svg class="image" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.24.24H5.76A5.76 5.76 0 0 0 0 6v12a5.76 5.76 0 0 0 5.76 5.76h12.48A5.76 5.76 0 0 0 24 18V6A5.76 5.76 0 0 0 18.24.24m.816 17.166v.504a.49.49 0 0 1-.486.49h-1.474a.49.49 0 0 1-.49-.49v-4.344a3.67 3.67 0 0 0-1.12-2.656 3.65 3.65 0 0 0-2.61-.956h-.752a3.65 3.65 0 0 0-2.61.956 3.67 3.67 0 0 0-1.12 2.656v4.344a.49.49 0 0 1-.49.49H6.03a.49.49 0 0 1-.49-.49v-.504a4.12 4.12 0 0 1 1.056-2.79 4.14 4.14 0 0 1 2.92-1.282h.334a1.86 1.86 0 0 0 1.29-.53 1.87 1.87 0 0 0 .53-1.32V8.498a.49.49 0 0 1 .49-.49h1.74a.49.49 0 0 1 .49.49v2.79a1.87 1.87 0 0 0 .53 1.32 1.86 1.86 0 0 0 1.29.53h.334a4.14 4.14 0 0 1 2.92 1.282 4.12 4.12 0 0 1 1.056 2.79"/>
+    </svg>
+    <span class="title">Farcaster Notifications</span>
+    <span class="instance">{{ trmnl.plugin_settings.instance_name }}</span>
+  </div>
+</div>
