@@ -243,14 +243,7 @@
               <div class="item-header">
                 <!-- Action Badge -->
                 <span class="badge {% if n_type == 'mention' or n_type == 'reply' or n_type == 'replies' or n_type == 'mentions' %}badge--invert{% endif %}">
-                  {% case n_type %}
-                    {% when "likes" or "like" %}LIKE
-                    {% when "recasts" or "recast" %}RECAST
-                    {% when "replies" or "reply" %}REPLY
-                    {% when "mentions" or "mention" %}MENTION
-                    {% when "follows" or "follow" %}FOLLOW
-                    {% else %}{{ n_type | upcase }}
-                  {% endcase %}
+                  {% if n_type == "likes" or n_type == "like" %}LIKE{% elsif n_type == "recasts" or n_type == "recast" %}RECAST{% elsif n_type == "replies" or n_type == "reply" %}REPLY{% elsif n_type == "mentions" or n_type == "mention" %}MENTION{% elsif n_type == "follows" or n_type == "follow" %}FOLLOW{% else %}{{ n_type | upcase }}{% endif %}
                 </span>
 
                 <!-- Actor Handle -->
