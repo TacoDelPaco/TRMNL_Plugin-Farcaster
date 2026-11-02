@@ -152,7 +152,7 @@
     text-align: center;
   }
 
-  /* Full-width, bottom-pinned, right-aligned title bar */
+  /* Full-width, bottom-pinned title bar with everything grouped on the right */
   .title_bar {
     position: absolute !important;
     bottom: 0 !important;
@@ -173,18 +173,25 @@
   }
 
   .title_bar .image {
-    width: 16px;
-    height: 16px;
+    width: 18px !important;
+    height: 18px !important;
+    max-height: 18px !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
   }
 
   .title_bar .title {
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    color: #000 !important;
   }
 
+  /* Hide duplicate instance name to prevent repeating "Farcaster Notifs" */
   .title_bar .instance {
-    font-size: 11px;
-    color: #555;
+    display: none !important;
   }
 </style>
 
@@ -321,12 +328,11 @@
     {% endif %}
   </div>
 
-  <!-- Bottom Title Bar: Full Width, Right-Aligned -->
+  <!-- Bottom Title Bar: Single, Crisp Icon & Label, Right-Aligned Across Screen -->
   <div class="title_bar">
-    <svg class="image" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M18.24.24H5.76A5.76 5.76 0 0 0 0 6v12a5.76 5.76 0 0 0 5.76 5.76h12.48A5.76 5.76 0 0 0 24 18V6A5.76 5.76 0 0 0 18.24.24m.816 17.166v.504a.49.49 0 0 1-.486.49h-1.474a.49.49 0 0 1-.49-.49v-4.344a3.67 3.67 0 0 0-1.12-2.656 3.65 3.65 0 0 0-2.61-.956h-.752a3.65 3.65 0 0 0-2.61.956 3.67 3.67 0 0 0-1.12 2.656v4.344a.49.49 0 0 1-.49.49H6.03a.49.49 0 0 1-.49-.49v-.504a4.12 4.12 0 0 1 1.056-2.79 4.14 4.14 0 0 1 2.92-1.282h.334a1.86 1.86 0 0 0 1.29-.53 1.87 1.87 0 0 0 .53-1.32V8.498a.49.49 0 0 1 .49-.49h1.74a.49.49 0 0 1 .49.49v2.79a1.87 1.87 0 0 0 .53 1.32 1.86 1.86 0 0 0 1.29.53h.334a4.14 4.14 0 0 1 2.92 1.282 4.12 4.12 0 0 1 1.056 2.79"/>
+    <svg class="image" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M3 2h18v6h-3v14h-4V11H10v11H6V8H3V2zm6 9h6V5H9v6z"/>
     </svg>
-    <span class="title">Farcaster Notifications</span>
-    <span class="instance">{{ trmnl.plugin_settings.instance_name }}</span>
+    <span class="title">{{ trmnl.plugin_settings.instance_name | default: "Farcaster Notifications" }}</span>
   </div>
 </div>
