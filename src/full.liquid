@@ -204,127 +204,127 @@
 {% assign count_total = 0 %}
 
 {% for item in notifications %}
-  {% assign count_total = count_total | plus: 1 %}
-  {% assign n_type = item.type | downcase %}
-  {% if n_type == "likes" or n_type == "like" %}
-    {% assign count_likes = count_likes | plus: 1 %}
-  {% elsif n_type == "recasts" or n_type == "recast" %}
-    {% assign count_recasts = count_recasts | plus: 1 %}
-  {% elsif n_type == "replies" or n_type == "reply" %}
-    {% assign count_replies = count_replies | plus: 1 %}
-  {% elsif n_type == "mentions" or n_type == "mention" %}
-    {% assign count_mentions = count_mentions | plus: 1 %}
-  {% elsif n_type == "follows" or n_type == "follow" %}
-    {% assign count_follows = count_follows | plus: 1 %}
-  {% endif %}
+{% assign count_total = count_total | plus: 1 %}
+{% assign n_type = item.type | downcase %}
+{% if n_type == "likes" or n_type == "like" %}
+{% assign count_likes = count_likes | plus: 1 %}
+{% elsif n_type == "recasts" or n_type == "recast" %}
+{% assign count_recasts = count_recasts | plus: 1 %}
+{% elsif n_type == "replies" or n_type == "reply" %}
+{% assign count_replies = count_replies | plus: 1 %}
+{% elsif n_type == "mentions" or n_type == "mention" %}
+{% assign count_mentions = count_mentions | plus: 1 %}
+{% elsif n_type == "follows" or n_type == "follow" %}
+{% assign count_follows = count_follows | plus: 1 %}
+{% endif %}
 {% endfor %}
 
 <div class="layout">
   <div class="content" style="height: 100%;">
     {% if notifications and notifications.size > 0 %}
-      <div class="main-columns">
-        <!-- Left: Notifications Feed (Spaced & Legible) -->
-        <div class="feed-col">
-          {% for item in notifications limit:10 %}
-            {% assign n_type = item.type | downcase %}
-            {% assign n_time = item.timestamp | default: item.most_recent_timestamp %}
-            {% assign cast_text = item.text | default: item.cast.text %}
+    <div class="main-columns">
+      <!-- Left: Notifications Feed (Spaced & Legible) -->
+      <div class="feed-col">
+        {% for item in notifications limit:10 %}
+        {% assign n_type = item.type | downcase %}
+        {% assign n_time = item.timestamp | default: item.most_recent_timestamp %}
+        {% assign cast_text = item.text | default: item.cast.text %}
 
-            <!-- Identify who performed the action -->
-            {% if n_type == "likes" or n_type == "like" or n_type == "recasts" or n_type == "recast" %}
-              {% assign handle = item.reactions[0].user.username | default: item.reactions[0].fname | default: item.users[0].username | default: item.actorHandle %}
-              {% assign name = item.reactions[0].user.display_name | default: item.reactions[0].user.displayName | default: item.actorName %}
-              {% assign extra_count = item.reactions.size | minus: 1 %}
-            {% elsif n_type == "follows" or n_type == "follow" %}
-              {% assign handle = item.user.username | default: item.follows[0].user.username | default: item.users[0].username | default: item.actorHandle %}
-              {% assign name = item.user.display_name | default: item.user.displayName | default: item.actorName %}
-              {% assign extra_count = 0 %}
-            {% else %}
-              <!-- Replies, Mentions, Quotes: cast.author is the person who commented -->
-              {% assign handle = item.actorHandle | default: item.cast.author.username %}
-              {% assign name = item.actorName | default: item.cast.author.display_name | default: item.cast.author.displayName %}
-              {% assign extra_count = 0 %}
-            {% endif %}
+        <!-- Identify who performed the action -->
+        {% if n_type == "likes" or n_type == "like" or n_type == "recasts" or n_type == "recast" %}
+        {% assign handle = item.reactions[0].user.username | default: item.reactions[0].fname | default: item.users[0].username | default: item.actorHandle %}
+        {% assign name = item.reactions[0].user.display_name | default: item.reactions[0].user.displayName | default: item.actorName %}
+        {% assign extra_count = item.reactions.size | minus: 1 %}
+        {% elsif n_type == "follows" or n_type == "follow" %}
+        {% assign handle = item.user.username | default: item.follows[0].user.username | default: item.users[0].username | default: item.actorHandle %}
+        {% assign name = item.user.display_name | default: item.user.displayName | default: item.actorName %}
+        {% assign extra_count = 0 %}
+        {% else %}
+        <!-- Replies, Mentions, Quotes: cast.author is the person who commented -->
+        {% assign handle = item.actorHandle | default: item.cast.author.username %}
+        {% assign name = item.actorName | default: item.cast.author.display_name | default: item.cast.author.displayName %}
+        {% assign extra_count = 0 %}
+        {% endif %}
 
-            <div class="notification-item">
-              <div class="item-header">
-                <!-- Action Badge -->
-                <span class="badge {% if n_type == 'mention' or n_type == 'reply' or n_type == 'replies' or n_type == 'mentions' %}badge--invert{% endif %}">
-                  {% if n_type == "likes" or n_type == "like" %}LIKE{% elsif n_type == "recasts" or n_type == "recast" %}RECAST{% elsif n_type == "replies" or n_type == "reply" %}REPLY{% elsif n_type == "mentions" or n_type == "mention" %}MENTION{% elsif n_type == "follows" or n_type == "follow" %}FOLLOW{% else %}{{ n_type | upcase }}{% endif %}
-                </span>
+        <div class="notification-item">
+          <div class="item-header">
+            <!-- Action Badge -->
+            <span class="badge {% if n_type == 'mention' or n_type == 'reply' or n_type == 'replies' or n_type == 'mentions' %}badge--invert{% endif %}">
+              {% if n_type == "likes" or n_type == "like" %}LIKE{% elsif n_type == "recasts" or n_type == "recast" %}RECAST{% elsif n_type == "replies" or n_type == "reply" %}REPLY{% elsif n_type == "mentions" or n_type == "mention" %}MENTION{% elsif n_type == "follows" or n_type == "follow" %}FOLLOW{% else %}{{ n_type | upcase }}{% endif %}
+            </span>
 
-                <!-- Actor Handle -->
-                <span class="actor-handle">
-                  {% if handle != blank %}
-                    @{{ handle | escape }}
-                    {% if extra_count > 0 %}
-                      <span style="font-weight: normal; color: #666;">+{{ extra_count }}</span>
-                    {% endif %}
-                  {% elsif name != blank %}
-                    {{ name | escape }}
-                  {% else %}
-                    Someone
-                  {% endif %}
-                </span>
-
-                <!-- Timestamp -->
-                {% if n_time != blank %}
-                  <span class="time-meta">
-                    {{ n_time | date: "%b %d, %H:%M" }}
-                  </span>
-                {% endif %}
-              </div>
-
-              <!-- Cast text snippet -->
-              {% if cast_text != blank %}
-                <div class="cast-content">
-                  {{ cast_text | escape }}
-                </div>
-              {% elsif n_type == "follows" or n_type == "follow" %}
-                <div class="cast-content" style="color: #666; font-style: italic;">
-                  Started following you
-                </div>
+            <!-- Actor Handle -->
+            <span class="actor-handle">
+              {% if handle != blank %}
+              @{{ handle | escape }}
+              {% if extra_count > 0 %}
+              <span style="font-weight: normal; color: #666;">+{{ extra_count }}</span>
               {% endif %}
-            </div>
-          {% endfor %}
-        </div>
+              {% elsif name != blank %}
+              {{ name | escape }}
+              {% else %}
+              Someone
+              {% endif %}
+            </span>
 
-        <!-- Right: Notification Counts Breakdown -->
-        <div class="sidebar-col">
-          <div class="sidebar-header">
-            <span class="sidebar-title">ACTIVITY</span>
-            <span class="sidebar-total">{{ count_total }} TOTAL</span>
+            <!-- Timestamp -->
+            {% if n_time != blank %}
+            <span class="time-meta">
+              {{ n_time | date: "%b %d, %H:%M" }}
+            </span>
+            {% endif %}
           </div>
 
-          <div class="stats-list">
-            <div class="stat-row">
-              <span class="stat-label">LIKES</span>
-              <span class="stat-value">{{ count_likes }}</span>
-            </div>
-            <div class="stat-row">
-              <span class="stat-label">RECASTS</span>
-              <span class="stat-value">{{ count_recasts }}</span>
-            </div>
-            <div class="stat-row">
-              <span class="stat-label">REPLIES</span>
-              <span class="stat-value">{{ count_replies }}</span>
-            </div>
-            <div class="stat-row">
-              <span class="stat-label">MENTIONS</span>
-              <span class="stat-value">{{ count_mentions }}</span>
-            </div>
-            <div class="stat-row">
-              <span class="stat-label">FOLLOWS</span>
-              <span class="stat-value">{{ count_follows }}</span>
-            </div>
+          <!-- Cast text snippet -->
+          {% if cast_text != blank %}
+          <div class="cast-content">
+            {{ cast_text | escape }}
+          </div>
+          {% elsif n_type == "follows" or n_type == "follow" %}
+          <div class="cast-content" style="color: #666; font-style: italic;">
+            Started following you
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Right: Notification Counts Breakdown -->
+      <div class="sidebar-col">
+        <div class="sidebar-header">
+          <span class="sidebar-title">ACTIVITY</span>
+          <span class="sidebar-total">{{ count_total }} TOTAL</span>
+        </div>
+
+        <div class="stats-list">
+          <div class="stat-row">
+            <span class="stat-label">LIKES</span>
+            <span class="stat-value">{{ count_likes }}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">RECASTS</span>
+            <span class="stat-value">{{ count_recasts }}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">REPLIES</span>
+            <span class="stat-value">{{ count_replies }}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">MENTIONS</span>
+            <span class="stat-value">{{ count_mentions }}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">FOLLOWS</span>
+            <span class="stat-value">{{ count_follows }}</span>
           </div>
         </div>
       </div>
+    </div>
     {% else %}
-      <div class="empty-state">
-        <span class="title title--small">No notifications to display</span>
-        <span class="meta mt--1">Check your Farcaster FID and Neynar API key</span>
-      </div>
+    <div class="empty-state">
+      <span class="title title--small">No notifications to display</span>
+      <span class="meta mt--1">Check your Farcaster FID and Neynar API key</span>
+    </div>
     {% endif %}
   </div>
 
